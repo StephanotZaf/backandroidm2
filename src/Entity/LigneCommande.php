@@ -2,10 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\LigneCommandeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @ApiResource(
+ *      shortName="lignecommande"
+ * )
  * @ORM\Entity(repositoryClass=LigneCommandeRepository::class)
  */
 class LigneCommande
