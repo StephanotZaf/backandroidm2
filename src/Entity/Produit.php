@@ -7,10 +7,21 @@ use App\Repository\ProduitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ApiResource()
+ * @ApiResource(
+ *     collectionOperations={"get","post"},
+ *     itemOperations={
+ *          "get"={"normalization_context"={"groups"={"product_listing:write"}}
+ *                  },
+ *          "put"
+ *                      },
+ *     normalizationContext={"groups"={"product_listing:read"}},
+ *     denormalizationContext={"groups"={"product_listing:write"}}
+ * )
  * @ORM\Entity(repositoryClass=ProduitRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Produit
 {
@@ -23,16 +34,19 @@ class Produit
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"product_listing:read","product_listing:write"})
      */
     private $libelleProduit;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"product_listing:read","product_listing:write"})
      */
     private $prixUnitaire;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"product_listing:read"})
      */
     private $quantiteEnStock;
 
@@ -45,6 +59,12 @@ class Produit
      * @ORM\OneToMany(targetEntity=LigneCommande::class, mappedBy="produit", orphanRemoval=true)
      */
     private $ligneCommandes;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Groups({"product_listing:write","product_listing:read"})
+     */
+    private $image;
 
     public function __construct()
     {
@@ -151,5 +171,25 @@ class Produit
         }
 
         return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setQuantiteEnStockInit()
+    {
+        $this->quantiteEnStock = 0;
     }
 }

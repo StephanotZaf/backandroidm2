@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ApiResource()
  * @ORM\Entity(repositoryClass=ProduitApprovisionnementRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class ProduitApprovisionnement
 {
@@ -75,5 +76,21 @@ class ProduitApprovisionnement
         $this->produit = $produit;
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function setQte()
+    {
+        return $this->getProduit()->setQuantiteEnStock($this->getProduit()->getQuantiteEnStock()+$this->getQuantiteApprovisionnee());
+    }
+
+    /**
+     * @ORM\PreRemove()
+     */
+    public function setRestoreQte()
+    {
+        return $this->getProduit()->setQuantiteEnStock($this->getProduit()->getQuantiteEnStock()-$this->getQuantiteApprovisionnee());
     }
 }

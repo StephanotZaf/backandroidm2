@@ -8,9 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ApiResource(
- *      shortName="lignecommande"
+ *     collectionOperations={"get","post"},
+ *     itemOperations={"get","put","delete"},
+ *     normalizationContext={},
+ *     denormalizationContext={},
+ *     shortName="lignecommande"
  * )
  * @ORM\Entity(repositoryClass=LigneCommandeRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class LigneCommande
 {
@@ -77,5 +82,13 @@ class LigneCommande
         $this->commande = $commande;
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function setQte()
+    {
+        return $this->getProduit()->setQuantiteEnStock($this->getProduit()->getQuantiteEnStock() - $this->getQuantite());
     }
 }

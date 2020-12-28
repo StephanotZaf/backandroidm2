@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     shortName="approvismt"
  * )
  * @ORM\Entity(repositoryClass=ApprovisionnementRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Approvisionnement
 {
@@ -86,4 +87,13 @@ class Approvisionnement
 
         return $this;
     }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function setDateApprovisionnementk()
+    {
+        $this->dateApprovisionnement = new \DateTime();
+    }
+
 }

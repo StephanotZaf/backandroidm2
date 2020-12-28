@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Commande;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -47,4 +48,12 @@ class CommandeRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findLigneCommandeByCommande()
+    {
+        return $this->createQueryBuilder('c')
+            ->innerJoin('c.ligneCommandes', 'lc')
+            ->innerJoin('lc.produit', 'p')
+            ->select('(p.prixUnitaire * lc.quantite) AS montant');
+    }
 }
